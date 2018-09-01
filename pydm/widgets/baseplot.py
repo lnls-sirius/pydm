@@ -1,3 +1,4 @@
+import logging
 from ..PyQt.QtGui import QLabel, QApplication, QColor, QBrush
 from ..PyQt.QtCore import pyqtSignal, pyqtSlot, pyqtProperty, QTimer, Qt
 from .. import utilities
@@ -5,6 +6,8 @@ from pyqtgraph import PlotWidget, ViewBox, AxisItem, PlotItem
 from pyqtgraph import PlotDataItem, mkPen
 from collections import OrderedDict
 from .base import PyDMPrimitiveWidget
+
+logger = logging.getLogger(__name__)
 
 
 class NoDataError(Exception):
@@ -119,10 +122,15 @@ class BasePlotCurveItem(PlotDataItem):
         if isinstance(new_color, str):
             self.color_string = new_color
             return
-        self._color = new_color
-        self._pen.setColor(self._color)
-        self.setPen(self._pen)
-        self.setSymbolPen(self._color)
+        try:
+            self._color = QColor(new_color)
+            self._pen.setColor(self._color)
+            self.setPen(self._pen)
+            self.setSymbolPen(self._color)
+        except Exception:
+            logger.error(
+                'Error setting color, type must be QColor or str, not' +
+                str(type(new_color)) + '.')
 
     @property
     def lineStyle(self):
@@ -151,6 +159,8 @@ class BasePlotCurveItem(PlotDataItem):
         if new_style in self.lines.values():
             self._pen.setStyle(new_style)
             self.setPen(self._pen)
+        else:
+            logger.error('Error seting lineStyle for curve.')
 
     @property
     def lineWidth(self):
@@ -172,8 +182,12 @@ class BasePlotCurveItem(PlotDataItem):
         -------
         new_width: int
         """
-        self._pen.setWidth(int(new_width))
-        self.setPen(self._pen)
+        try:
+            new_width = int(new_width)
+            self._pen.setWidth(new_width)
+            self.setPen(self._pen)
+        except Exception:
+            logger.error('Error setting lineWidth.')
 
     @property
     def symbol(self):
@@ -202,6 +216,8 @@ class BasePlotCurveItem(PlotDataItem):
         if new_symbol in self.symbols.values():
             self.setSymbol(new_symbol)
             self.setSymbolPen(self._color)
+        else:
+            logger.error('Error seting symbol for curve.')
 
     @property
     def symbolSize(self):
@@ -223,7 +239,11 @@ class BasePlotCurveItem(PlotDataItem):
         -------
         new_size: int
         """
-        self.setSymbolSize(int(new_size))
+        try:
+            new_size = int(new_size)
+            self.setSymbolSize(new_size)
+        except Exception:
+            logger.error('Error setting symbolSize for curve.')
 
     def to_dict(self):
         """
@@ -568,19 +588,19 @@ class BasePlot(PlotWidget, PyDMPrimitiveWidget):
         """
         The maximum rate (in Hz) at which the plot will be redrawn.
         The plot will not be redrawn if there is not new data to draw.
-        
+
         Returns
         -------
         int
         """
         return self._redraw_rate
-    
+
     @maxRedrawRate.setter
     def maxRedrawRate(self, redraw_rate):
         """
         The maximum rate (in Hz) at which the plot will be redrawn.
         The plot will not be redrawn if there is not new data to draw.
-        
+
         Parameters
         -------
         redraw_rate : int
