@@ -269,9 +269,7 @@ class BasePlot(PlotWidget, PyDMPrimitiveWidget):
         PyDMPrimitiveWidget.__init__(self)
         self.plotItem = self.getPlotItem()
         self.plotItem.hideButtons()
-        self._auto_range_x = None
         self.setAutoRangeX(True)
-        self._auto_range_y = None
         self.setAutoRangeY(True)
         self._min_x = 0.0
         self._max_x = 1.0
@@ -422,23 +420,19 @@ class BasePlot(PlotWidget, PyDMPrimitiveWidget):
     showLegend = pyqtProperty(bool, getShowLegend, setShowLegend, resetShowLegend)
 
     def getAutoRangeX(self):
-        return self._auto_range_x
+        return self.PlotItem.vb.autoRangeEnabled()[0]
 
     def setAutoRangeX(self, value):
-        self._auto_range_x = value
-        if self._auto_range_x:
-            self.plotItem.enableAutoRange(ViewBox.XAxis, enable=self._auto_range_x)
+        self.plotItem.enableAutoRange(ViewBox.XAxis, enable=value)
 
     def resetAutoRangeX(self):
         self.setAutoRangeX(True)
 
     def getAutoRangeY(self):
-        return self._auto_range_y
+        return self.PlotItem.vb.autoRangeEnabled()[1]
 
     def setAutoRangeY(self, value):
-        self._auto_range_y = value
-        if self._auto_range_y:
-            self.plotItem.enableAutoRange(ViewBox.YAxis, enable=self._auto_range_y)
+        self.plotItem.enableAutoRange(ViewBox.YAxis, enable=value)
 
     def resetAutoRangeY(self):
         self.setAutoRangeY(True)
@@ -461,7 +455,7 @@ class BasePlot(PlotWidget, PyDMPrimitiveWidget):
         -------
         new_min_x_range : float
         """
-        if self._auto_range_x:
+        if self.getAutoRangeX():
             return
         self._min_x = new_min_x_range
         self.plotItem.setXRange(self._min_x, self._max_x, padding=0)
@@ -484,7 +478,7 @@ class BasePlot(PlotWidget, PyDMPrimitiveWidget):
         -------
         new_max_x_range : float
         """
-        if self._auto_range_x:
+        if self.getAutoRangeX():
             return
 
         self._max_x = new_max_x_range
@@ -508,7 +502,7 @@ class BasePlot(PlotWidget, PyDMPrimitiveWidget):
         -------
         new_min_y_range : float
         """
-        if self._auto_range_y:
+        if self.getAutoRangeY():
             return
 
         self._min_y = new_min_y_range
@@ -533,7 +527,7 @@ class BasePlot(PlotWidget, PyDMPrimitiveWidget):
         -------
         new_max_y_range : float
         """
-        if self._auto_range_y:
+        if self.getAutoRangeY():
             return
 
         self._max_y = new_max_y_range
