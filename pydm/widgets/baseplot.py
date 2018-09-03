@@ -126,7 +126,7 @@ class BasePlotCurveItem(PlotDataItem):
             self._pen.setColor(self._color)
             self.setPen(self._pen)
             self.setSymbolPen(self._color)
-        except Exception:
+        except (TypeError, ValueError):
             logger.error(
                 'Error setting color, type must be QColor or str, not' +
                 str(type(new_color)) + '.')
@@ -185,7 +185,7 @@ class BasePlotCurveItem(PlotDataItem):
             new_width = int(new_width)
             self._pen.setWidth(new_width)
             self.setPen(self._pen)
-        except Exception:
+        except (TypeError, ValueError):
             logger.error('Error setting lineWidth.')
 
     @property
@@ -492,7 +492,6 @@ class BasePlot(PlotWidget, PyDMPrimitiveWidget):
 
         self._min_y = new_min_y_range
         self.plotItem.setYRange(self._min_y, self._max_y, padding=0)
-
 
     def getMaxYRange(self):
         """
