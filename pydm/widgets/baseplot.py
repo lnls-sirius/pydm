@@ -254,7 +254,8 @@ class BasePlotCurveItem(PlotDataItem):
         -------
         OrderedDict
         """
-        return OrderedDict([("name", self.name()),
+        return OrderedDict([
+            ("name", self.name()),
                             ("color", self.color_string),
                             ("lineStyle", self.lineStyle),
                             ("lineWidth", self.lineWidth),
@@ -264,8 +265,8 @@ class BasePlotCurveItem(PlotDataItem):
 
 class BasePlot(PlotWidget, PyDMPrimitiveWidget):
     def __init__(self, parent=None, background='default', axisItems=None):
-        PlotWidget.__init__(self, parent=parent, background=background,
-                            axisItems=axisItems)
+        PlotWidget.__init__(
+            self, parent=parent, background=background, axisItems=axisItems)
         PyDMPrimitiveWidget.__init__(self)
         self.plotItem = self.getPlotItem()
         self.plotItem.hideButtons()
@@ -279,9 +280,8 @@ class BasePlot(PlotWidget, PyDMPrimitiveWidget):
         self.setShowYGrid(False)
         self.redraw_timer = QTimer(self)
         self.redraw_timer.timeout.connect(self.redrawPlot)
-        self._redraw_rate = 30 #Redraw at 30 Hz by default.
+        self._redraw_rate = 30  # Redraw at 30 Hz by default.
         self.maxRedrawRate = self._redraw_rate
-        self._curves = []
         self._title = None
         self._show_legend = False
         self._legend = self.addLegend()
@@ -345,7 +345,8 @@ class BasePlot(PlotWidget, PyDMPrimitiveWidget):
     def resetShowXGrid(self):
         self.setShowXGrid(False)
 
-    showXGrid = pyqtProperty("bool", getShowXGrid, setShowXGrid, resetShowXGrid)
+    showXGrid = pyqtProperty(
+        "bool", getShowXGrid, setShowXGrid, resetShowXGrid)
 
     def getShowYGrid(self):
         return self.plotItem.ctrl.yGridCheck.isChecked()
@@ -356,7 +357,8 @@ class BasePlot(PlotWidget, PyDMPrimitiveWidget):
     def resetShowYGrid(self):
         self.setShowYGrid(False)
 
-    showYGrid = pyqtProperty("bool", getShowYGrid, setShowYGrid, resetShowYGrid)
+    showYGrid = pyqtProperty(
+        "bool", getShowYGrid, setShowYGrid, resetShowYGrid)
 
     def getBackgroundColor(self):
         return self.backgroundBrush().color()
@@ -365,13 +367,15 @@ class BasePlot(PlotWidget, PyDMPrimitiveWidget):
         if self.backgroundBrush().color() != color:
             self.setBackgroundBrush(QBrush(color))
 
-    backgroundColor = pyqtProperty(QColor, getBackgroundColor, setBackgroundColor)
+    backgroundColor = pyqtProperty(
+        QColor, getBackgroundColor, setBackgroundColor)
 
     def getAxisColor(self):
         return self.getAxis('bottom')._pen.color()
 
     def setAxisColor(self, color):
-        if self.getAxis('bottom')._pen.color() != color:
+        if self.getAxis('bottom')._pen.color() == color:
+            return
             self.getAxis('bottom').setPen(color)
             self.getAxis('left').setPen(color)
             self.getAxis('top').setPen(color)
@@ -380,9 +384,7 @@ class BasePlot(PlotWidget, PyDMPrimitiveWidget):
     axisColor = pyqtProperty(QColor, getAxisColor, setAxisColor)
 
     def getPlotTitle(self):
-        if self._title is None:
-            return ""
-        return str(self._title)
+        return '' if self._title is None else str(self._title)
 
     def setPlotTitle(self, value):
         self._title = str(value)
@@ -413,7 +415,8 @@ class BasePlot(PlotWidget, PyDMPrimitiveWidget):
     def resetShowLegend(self):
         self.setShowLegend(False)
 
-    showLegend = pyqtProperty(bool, getShowLegend, setShowLegend, resetShowLegend)
+    showLegend = pyqtProperty(
+        bool, getShowLegend, setShowLegend, resetShowLegend)
 
     def getAutoRangeX(self):
         return self.PlotItem.vb.autoRangeEnabled()[0]
