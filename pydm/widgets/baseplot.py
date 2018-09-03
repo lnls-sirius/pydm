@@ -1,10 +1,9 @@
 import logging
-from ..PyQt.QtGui import QLabel, QApplication, QColor, QBrush
+from collections import OrderedDict
+from pyqtgraph import PlotWidget, ViewBox, PlotDataItem, mkPen
+from ..PyQt.QtGui import QColor, QBrush
 from ..PyQt.QtCore import pyqtSignal, pyqtSlot, pyqtProperty, QTimer, Qt
 from .. import utilities
-from pyqtgraph import PlotWidget, ViewBox, AxisItem, PlotItem
-from pyqtgraph import PlotDataItem, mkPen
-from collections import OrderedDict
 from .base import PyDMPrimitiveWidget
 
 logger = logging.getLogger(__name__)
