@@ -275,9 +275,7 @@ class BasePlot(PlotWidget, PyDMPrimitiveWidget):
         self._max_x = 1.0
         self._min_y = 0.0
         self._max_y = 1.0
-        self._show_x_grid = None
         self.setShowXGrid(False)
-        self._show_y_grid = None
         self.setShowYGrid(False)
         self.redraw_timer = QTimer(self)
         self.redraw_timer.timeout.connect(self.redrawPlot)
@@ -339,11 +337,10 @@ class BasePlot(PlotWidget, PyDMPrimitiveWidget):
         pass
 
     def getShowXGrid(self):
-        return self._show_x_grid
+        return self.plotItem.ctrl.xGridCheck.isChecked()
 
     def setShowXGrid(self, value):
-        self._show_x_grid = value
-        self.showGrid(x=self._show_x_grid)
+        self.showGrid(x=value)
 
     def resetShowXGrid(self):
         self.setShowXGrid(False)
@@ -351,11 +348,10 @@ class BasePlot(PlotWidget, PyDMPrimitiveWidget):
     showXGrid = pyqtProperty("bool", getShowXGrid, setShowXGrid, resetShowXGrid)
 
     def getShowYGrid(self):
-        return self._show_y_grid
+        return self.plotItem.ctrl.yGridCheck.isChecked()
 
     def setShowYGrid(self, value):
-        self._show_y_grid = value
-        self.showGrid(y=self._show_y_grid)
+        self.showGrid(y=value)
 
     def resetShowYGrid(self):
         self.setShowYGrid(False)
