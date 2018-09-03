@@ -283,9 +283,8 @@ class BasePlot(PlotWidget, PyDMPrimitiveWidget):
         self._redraw_rate = 30  # Redraw at 30 Hz by default.
         self.maxRedrawRate = self._redraw_rate
         self._title = None
-        self._show_legend = False
-        self._legend = self.addLegend()
-        self._legend.hide()
+        self.addLegend()
+        self.legend.hide()
 
     def addCurve(self, plot_item, curve_color=None):
         if curve_color is None:
@@ -326,11 +325,7 @@ class BasePlot(PlotWidget, PyDMPrimitiveWidget):
         return self._curves
 
     def clear(self):
-        legend_items = [label.text for (sample, label) in self._legend.items]
-        for item in legend_items:
-            self._legend.removeItem(item)
         self.plotItem.clear()
-        self._curves = []
 
     @pyqtSlot()
     def redrawPlot(self):
@@ -399,18 +394,17 @@ class BasePlot(PlotWidget, PyDMPrimitiveWidget):
     title = pyqtProperty(str, getPlotTitle, setPlotTitle, resetPlotTitle)
 
     def getShowLegend(self):
-        return self._show_legend
+        return self.legend.isVisible()
 
     def setShowLegend(self, value):
-        self._show_legend = value
-        if self._show_legend:
-            if self._legend is None:
-                self._legend = self.addLegend()
+        if value:
+            if self.legend is None:
+                self.addLegend()
             else:
-                self._legend.show()
+                self.legend.show()
         else:
-            if self._legend is not None:
-                self._legend.hide()
+            if self.legend is not None:
+                self.legend.hide()
 
     def resetShowLegend(self):
         self.setShowLegend(False)
