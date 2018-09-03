@@ -255,11 +255,11 @@ class BasePlotCurveItem(PlotDataItem):
         """
         return OrderedDict([
             ("name", self.name()),
-                            ("color", self.color_string),
-                            ("lineStyle", self.lineStyle),
-                            ("lineWidth", self.lineWidth),
-                            ("symbol", self.symbol),
-                            ("symbolSize", self.symbolSize)])
+            ("color", self.color_string),
+            ("lineStyle", self.lineStyle),
+            ("lineWidth", self.lineWidth),
+            ("symbol", self.symbol),
+            ("symbolSize", self.symbolSize)])
 
 
 class BasePlot(PlotWidget, PyDMPrimitiveWidget):
@@ -363,10 +363,10 @@ class BasePlot(PlotWidget, PyDMPrimitiveWidget):
     def setAxisColor(self, color):
         if self.getAxis('bottom')._pen.color() == color:
             return
-            self.getAxis('bottom').setPen(color)
-            self.getAxis('left').setPen(color)
-            self.getAxis('top').setPen(color)
-            self.getAxis('right').setPen(color)
+        self.getAxis('bottom').setPen(color)
+        self.getAxis('left').setPen(color)
+        self.getAxis('top').setPen(color)
+        self.getAxis('right').setPen(color)
 
     axisColor = pyqtProperty(QColor, getAxisColor, setAxisColor)
 
