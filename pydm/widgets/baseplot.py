@@ -289,43 +289,36 @@ class BasePlot(PlotWidget, PyDMPrimitiveWidget):
     def addCurve(self, plot_item, curve_color=None):
         if curve_color is None:
             curve_color = utilities.colors.default_colors[
-                    len(self._curves) % len(utilities.colors.default_colors)]
+                len(self.curves()) % len(utilities.colors.default_colors)]
             plot_item.color_string = curve_color
-        self._curves.append(plot_item)
         self.addItem(plot_item)
         self.redraw_timer.start()
-        # self._legend.addItem(plot_item, plot_item.curve_name)
 
     def removeCurve(self, plot_item):
         self.removeItem(plot_item)
-        # self._legend.removeItem(plot_item.name())
-        self._curves.remove(plot_item)
-        if len(self._curves) < 1:
+        if not self.curves():
             self.redraw_timer.stop()
 
     def removeCurveWithName(self, name):
-        for curve in self._curves:
+        for curve in self.curves():
             if curve.name() == name:
                 self.removeCurve(curve)
 
     def removeCurveAtIndex(self, index):
-        curve_to_remove = self._curves[index]
+        curve_to_remove = self.curves()[index]
         self.removeCurve(curve_to_remove)
 
     def setCurveAtIndex(self, index, new_curve):
-        old_curve = self._curves[index]
-        self._curves[index] = new_curve
-        # self._legend.addItem(new_curve, new_curve.name())
+        curves = self.curves()
+        old_curve = curves[index]
+        curves[index] = new_curve
         self.removeCurve(old_curve)
 
     def curveAtIndex(self, index):
-        return self._curves[index]
+        return self.curves()[index]
 
     def curves(self):
-        return self._curves
-
-    def clear(self):
-        self.plotItem.clear()
+        return self.plotItem.curves
 
     @pyqtSlot()
     def redrawPlot(self):
