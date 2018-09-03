@@ -301,3 +301,11 @@ def test_base_plot_curve_item_symbol_size_invalid(caplog, new_size):
     # Make sure logging capture the error, and have the correct error message
     for record in caplog.records:
         assert record.levelno == logging.ERROR
+
+
+# ------------------------------
+# TEST CASES FOR BasePlot WIDGET
+# ------------------------------
+
+@pytest.mark.parametrize()
+def test_baseplot_curve_manipulationss(qtbot):
