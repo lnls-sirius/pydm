@@ -40,7 +40,7 @@ class BasePlotCurvesModel(QAbstractTableModel):
     def rowCount(self, parent=None):
         if parent is not None and parent.isValid():
             return 0
-        return len(self.plot._curves)
+        return len(self.plot.plotItem.curves)
 
     def columnCount(self, parent=None):
         return len(self._column_names)
@@ -53,7 +53,7 @@ class BasePlotCurvesModel(QAbstractTableModel):
         if index.column() >= self.columnCount():
             return QVariant()
         column_name = self._column_names[index.column()]
-        curve = self.plot._curves[index.row()]
+        curve = self.plot.plotItem.curves[index.row()]
         if role == Qt.DisplayRole or role == Qt.EditRole:
             return self.get_data(column_name, curve)
         elif role == Qt.BackgroundRole and column_name == "Color":
@@ -85,7 +85,7 @@ class BasePlotCurvesModel(QAbstractTableModel):
         if index.column() >= self.columnCount():
             return False
         column_name = self._column_names[index.column()]
-        curve = self.plot._curves[index.row()]
+        curve = self.plot.plotItem.curves[index.row()]
         if role == Qt.EditRole:
             if isinstance(value, QVariant):
                 value = value.toString()

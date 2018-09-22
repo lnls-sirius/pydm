@@ -172,24 +172,24 @@ class PyDMTimePlot(BasePlot):
     def removeYChannel(self, curve):
         self.update_timer.timeout.disconnect(curve.asyncUpdate)
         self.removeCurve(curve)
-        if len(self._curves) < 1:
+        if not self.plotItem.curves:
             self.redraw_timer.stop()
 
     def removeYChannelAtIndex(self, index):
-        curve = self._curves[index]
+        curve = self.plotItem.curves[index]
         self.removeYChannel(curve)
 
     @pyqtSlot()
     def redrawPlot(self):
         self.updateXAxis()
-        for curve in self._curves:
+        for curve in self.plotItem.curves:
             curve.redrawCurve()
 
     def updateXAxis(self, update_immediately=False):
-        if len(self._curves) == 0:
+        if not self.plotItem.curves:
             return
         if self._update_mode == PyDMTimePlot.SynchronousMode:
-            maxrange = max([curve.max_x() for curve in self._curves])
+            maxrange = max([curve.max_x() for curve in self.plotItem.curves])
         else:
             maxrange = time.time()
         minrange = maxrange - self._time_span
@@ -200,7 +200,7 @@ class PyDMTimePlot(BasePlot):
         super(PyDMTimePlot, self).clear()
 
     def getCurves(self):
-        return [json.dumps(curve.to_dict()) for curve in self._curves]
+        return [json.dumps(curve.to_dict()) for curve in self.plotItem.curves]
 
     def setCurves(self, new_list):
         try:
@@ -228,13 +228,13 @@ class PyDMTimePlot(BasePlot):
     def setBufferSize(self, value):
         if self._bufferSize != int(value):
             self._bufferSize = max(int(value), 1)
-            for curve in self._curves:
+            for curve in self.plotItem.curves:
                 curve.setBufferSize(value)
 
     def resetBufferSize(self):
         if self._bufferSize != 1200:
             self._bufferSize = 1200
-            for curve in self._curves:
+            for curve in self.plotItem.curves:
                 curve.resetBufferSize()
 
     bufferSize = pyqtProperty("int", getBufferSize,
@@ -244,7 +244,7 @@ class PyDMTimePlot(BasePlot):
         return self._update_mode == PyDMTimePlot.AsynchronousMode
 
     def setUpdatesAsynchronously(self, value):
-        for curve in self._curves:
+        for curve in self.plotItem.curves:
             curve.setUpdatesAsynchronously(value)
         if value is True:
             self._update_mode = PyDMTimePlot.AsynchronousMode
@@ -256,7 +256,7 @@ class PyDMTimePlot(BasePlot):
     def resetUpdatesAsynchronously(self):
         self._update_mode = PyDMTimePlot.SynchronousMode
         self.update_timer.stop()
-        for curve in self._curves:
+        for curve in self.plotItem.curves:
             curve.resetUpdatesAsynchronously()
 
     updatesAsynchronously = pyqtProperty("bool",
@@ -272,7 +272,7 @@ class PyDMTimePlot(BasePlot):
         if self._time_span != value:
             self._time_span = value
             if self.getUpdatesAsynchronously():
-                for curve in self._curves:
+                for curve in self.plotItem.curves:
                     curve.setBufferSize(int((self._time_span * 1000.0) /
                                             self._update_interval))
             self.updateXAxis(update_immediately=True)
@@ -281,7 +281,7 @@ class PyDMTimePlot(BasePlot):
         if self._time_span != 5.0:
             self._time_span = 5.0
             if self.getUpdatesAsynchronously():
-                for curve in self._curves:
+                for curve in self.plotItem.curves:
                     curve.setBufferSize(int((self._time_span * 1000.0) /
                                         self._update_interval))
             self.updateXAxis(update_immediately=True)
@@ -315,11 +315,10 @@ class PyDMTimePlot(BasePlot):
         return False
 
     def setAutoRangeX(self, value):
-        self._auto_range_x = False
-        self.plotItem.enableAutoRange(ViewBox.XAxis, enable=self._auto_range_x)
+        super(PyDMTimePlot, self).setAutoRangeX(False)
 
     def channels(self):
-        return [curve.channel for curve in self._curves]
+        return [curve.channel for curve in self.plotItem.curves]
 
     # The methods for autoRangeY, minYRange, and maxYRange are
     # all defined in BasePlot, but we don't expose them as properties there, because not all plot

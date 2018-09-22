@@ -283,41 +283,41 @@ class BasePlot(PlotWidget, PyDMPrimitiveWidget):
         self.maxRedrawRate = self._redraw_rate
         self._title = None
         self.addLegend()
-        self.legend.hide()
+        self.plotItem.legend.hide()
 
     def addCurve(self, plot_item, curve_color=None):
         if curve_color is None:
             curve_color = utilities.colors.default_colors[
-                len(self.curves()) % len(utilities.colors.default_colors)]
+                len(self.plotItem.curves) % len(utilities.colors.default_colors)]
             plot_item.color_string = curve_color
         self.addItem(plot_item)
         self.redraw_timer.start()
 
     def removeCurve(self, plot_item):
         self.removeItem(plot_item)
-        if not self.curves():
+        if not self.plotItem.curves:
             self.redraw_timer.stop()
 
     def removeCurveWithName(self, name):
-        for curve in self.curves():
+        for curve in self.plotItem.curves:
             if curve.name() == name:
                 self.removeCurve(curve)
 
     def removeCurveAtIndex(self, index):
-        curve_to_remove = self.curves()[index]
+        curve_to_remove = self.plotItem.curves[index]
         self.removeCurve(curve_to_remove)
 
     def setCurveAtIndex(self, index, new_curve):
-        curves = self.curves()
+        curves = self.plotItem.curves
         old_curve = curves[index]
         curves[index] = new_curve
         self.removeCurve(old_curve)
 
     def curveAtIndex(self, index):
-        return self.curves()[index]
+        return self.plotItem.curves[index]
 
-    def curves(self):
-        return self.plotItem.curves
+    def clear(self):
+        self.plotItem.clear()
 
     @pyqtSlot()
     def redrawPlot(self):
@@ -386,17 +386,17 @@ class BasePlot(PlotWidget, PyDMPrimitiveWidget):
     title = pyqtProperty(str, getPlotTitle, setPlotTitle, resetPlotTitle)
 
     def getShowLegend(self):
-        return self.legend.isVisible()
+        return self.plotItem.legend.isVisible()
 
     def setShowLegend(self, value):
         if value:
-            if self.legend is None:
+            if self.plotItem.legend is None:
                 self.addLegend()
             else:
-                self.legend.show()
+                self.plotItem.legend.show()
         else:
-            if self.legend is not None:
-                self.legend.hide()
+            if self.plotItem.legend is not None:
+                self.plotItem.legend.hide()
 
     def resetShowLegend(self):
         self.setShowLegend(False)
@@ -405,7 +405,7 @@ class BasePlot(PlotWidget, PyDMPrimitiveWidget):
         bool, getShowLegend, setShowLegend, resetShowLegend)
 
     def getAutoRangeX(self):
-        return self.PlotItem.vb.autoRangeEnabled()[0]
+        return self.plotItem.vb.autoRangeEnabled()[0]
 
     def setAutoRangeX(self, value):
         self.plotItem.enableAutoRange(ViewBox.XAxis, enable=value)
@@ -414,7 +414,7 @@ class BasePlot(PlotWidget, PyDMPrimitiveWidget):
         self.setAutoRangeX(True)
 
     def getAutoRangeY(self):
-        return self.PlotItem.vb.autoRangeEnabled()[1]
+        return self.plotItem.vb.autoRangeEnabled()[1]
 
     def setAutoRangeY(self, value):
         self.plotItem.enableAutoRange(ViewBox.YAxis, enable=value)

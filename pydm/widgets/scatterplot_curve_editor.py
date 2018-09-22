@@ -46,8 +46,8 @@ class PyDMScatterPlotCurvesModel(BasePlotCurvesModel):
         return True
 
     def append(self, y_address=None, x_address=None, name=None, color=None):
-        self.beginInsertRows(QModelIndex(), len(self._plot._curves),
-                             len(self._plot._curves))
+        self.beginInsertRows(QModelIndex(), len(self._plot.plotItem.curves),
+                             len(self._plot.plotItem.curves))
         self._plot.addChannel(y_address, x_address, name, color)
         self.endInsertRows()
 

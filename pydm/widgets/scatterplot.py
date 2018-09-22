@@ -369,7 +369,7 @@ class PyDMScatterPlot(BasePlot):
         index: int
             Index for the curve to remove.
         """
-        curve = self._curves[index]
+        curve = self.plotItem.curves[index]
         self.removeChannel(curve)
 
     @pyqtSlot()
@@ -378,7 +378,7 @@ class PyDMScatterPlot(BasePlot):
         Request a redraw from each curve in the plot.
         Called by curves when they get new data.
         """
-        for curve in self._curves:
+        for curve in self.plotItem.curves:
             curve.redrawCurve()
 
     def clearCurves(self):
@@ -391,7 +391,7 @@ class PyDMScatterPlot(BasePlot):
         """
         Get a list of json representations for each curve.
         """
-        return [json.dumps(curve.to_dict()) for curve in self._curves]
+        return [json.dumps(curve.to_dict()) for curve in self.plotItem.curves]
 
     def setCurves(self, new_list):
         """
@@ -435,8 +435,8 @@ class PyDMScatterPlot(BasePlot):
         list
         """
         chans = []
-        chans.extend([curve.y_channel for curve in self._curves])
-        chans.extend([curve.x_channel for curve in self._curves])
+        chans.extend([curve.y_channel for curve in self.plotItem.curves])
+        chans.extend([curve.x_channel for curve in self.plotItem.curves])
         return chans
 
     # The methods for autoRangeX, minXRange, maxXRange, autoRangeY, minYRange,
