@@ -107,6 +107,10 @@ class PyDMSpinbox(QDoubleSpinBox, TextFormatter, PyDMWritableWidget):
         new_val : int or float
             The new value from the channel.
         """
+        if new_val is None:
+            # SpinBox is unable to work with None and
+            # but sometimes it can arrive as an initial value
+            return
         super(PyDMSpinbox, self).value_changed(new_val)
         self.valueBeingSet = True
         self.setValue(new_val)
@@ -152,6 +156,22 @@ class PyDMSpinbox(QDoubleSpinBox, TextFormatter, PyDMWritableWidget):
         """
         super(PyDMSpinbox, self).precision_changed(new_precision)
         self.setDecimals(new_precision)
+
+    @Property(int)
+    def precision(self):
+        if self.precisionFromPV:
+            return self._prec
+        else:
+            return self._user_prec
+
+    @precision.setter
+    def precision(self, new_prec):
+        if self.precisionFromPV:
+            return
+        if new_prec and self._user_prec != int(new_prec) and new_prec >= 0:
+            self._user_prec = int(new_prec)
+            self.value_changed(self.value)
+            self.setDecimals(new_prec)
 
     @Property(bool)
     def showStepExponent(self):

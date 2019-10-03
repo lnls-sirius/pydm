@@ -8,8 +8,7 @@ from qtpy.QtWidgets import (QApplication, QMenu, QGraphicsOpacityEffect,
 from qtpy.QtGui import QCursor
 from qtpy.QtCore import Qt, QEvent, Signal, Slot, Property
 from .channel import PyDMChannel
-from .. import data_plugins
-from .. import tools
+from .. import data_plugins, tools, config
 from ..utilities import is_qt_designer, remove_protocol
 from .rules import RulesDispatcher
 
@@ -209,6 +208,7 @@ class TextFormatter(object):
         self._show_units = False
         self.format_string = "{}"
         self._precision_from_pv = None
+        self._user_prec = 0
         self._prec = 0
         self._unit = ""
     
@@ -225,7 +225,7 @@ class TextFormatter(object):
         """
         self.format_string = "{}"
         if isinstance(self.value, (int, float)):
-            self.format_string = "{:." + str(self._prec) + "f}"
+            self.format_string = "{:." + str(self.precision) + "f}"
         if self._show_units and self._unit != "":
             self.format_string += " {}".format(self._unit)
         return self.format_string
@@ -270,7 +270,9 @@ class TextFormatter(object):
         prec : int
             The current precision value
         """
-        return self._prec
+        if self.precisionFromPV:
+            return self._prec
+        return self._user_prec
 
     @precision.setter
     def precision(self, new_prec):
@@ -285,11 +287,12 @@ class TextFormatter(object):
         """
         # Only allow one to change the property if not getting the precision
         # from the PV
-        if self._precision_from_pv is not None and self._precision_from_pv:
+        if self.precisionFromPV:
             return
         if new_prec and self._prec != int(new_prec) and new_prec >= 0:
-            self._prec = int(new_prec)
-            self.value_changed(self.value)
+            self._user_prec = int(new_prec)
+            if not is_qt_designer() or config.DESIGNER_ONLINE:
+                self.value_changed(self.value)
     
     @Slot(str)
     def unitChanged(self, new_unit):
@@ -407,6 +410,7 @@ class TextFormatter(object):
         """
         if self._precision_from_pv is None or self._precision_from_pv != bool(value):
             self._precision_from_pv = value
+            self.update_format_string()
     
     def value_changed(self, new_val):
         """
@@ -512,7 +516,7 @@ class PyDMWidget(PyDMPrimitiveWidget):
             menu = QMenu(parent=self)
 
         kwargs = {'channels': self.channels_for_tools(), 'sender': self}
-        tools.assemble_tools_menu(menu, widget_only=True, **kwargs)
+        tools.assemble_tools_menu(menu, widget_only=True, widget=self, **kwargs)
         return menu
 
     def open_context_menu(self, ev):
