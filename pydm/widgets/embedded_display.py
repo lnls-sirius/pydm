@@ -166,6 +166,10 @@ class PyDMEmbeddedDisplay(QFrame, PyDMPrimitiveWidget):
             full_fname = os.path.join(self.base_path, fname)
         else:
             full_fname = fname
+
+        if not full_fname:
+            return
+
         if not is_pydm_app():
             (filename, extension) = os.path.splitext(full_fname)
             if extension == ".ui":
@@ -255,6 +259,7 @@ class PyDMEmbeddedDisplay(QFrame, PyDMPrimitiveWidget):
         if self._is_connected or self.embedded_widget is None:
             return
         establish_widget_connections(self.embedded_widget)
+        self._is_connected = True
 
     def disconnect(self):
         """
@@ -264,6 +269,7 @@ class PyDMEmbeddedDisplay(QFrame, PyDMPrimitiveWidget):
         if not self._is_connected or self.embedded_widget is None:
             return
         close_widget_connections(self.embedded_widget)
+        self._is_connected = False
 
     @Property(bool)
     def loadWhenShown(self):
