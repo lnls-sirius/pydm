@@ -557,7 +557,7 @@ class PyDMTimePlot(BasePlot):
                              symbol=d.get('symbol'),
                              symbolSize=d.get('symbolSize'))
 
-    curves = Property("QStringList", getCurves, setCurves)
+    curves = Property("QStringList", getCurves, setCurves, designable=False)
 
     def findCurve(self, pv_name):
         """
@@ -842,6 +842,10 @@ class TimeAxisItem(AxisItem):
     """
     TimeAxisItem formats a unix time axis into a human-readable format.
     """
+    def __init__(self, *args, **kwargs):
+        super(TimeAxisItem, self).__init__(*args, **kwargs)
+        self.enableAutoSIPrefix(False)
+
     def tickStrings(self, values, scale, spacing):
         strings = []
         for val in values:
